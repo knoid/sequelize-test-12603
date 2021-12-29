@@ -39,26 +39,26 @@ class User
   extends Model<UserAttributes, UserCreationAttributes>
   implements UserAttributes
 {
-  public id!: number; // Note that the `null assertion` `!` is required in strict mode.
-  public name!: string;
-  public preferredName!: string | null; // for nullable fields
+  public declare id: number; // Note that the `null assertion` `!` is required in strict mode.
+  public declare name: string;
+  public declare preferredName: string | null; // for nullable fields
 
   // timestamps!
-  public readonly createdAt!: Date;
-  public readonly updatedAt!: Date;
+  public declare readonly createdAt: Date;
+  public declare readonly updatedAt: Date;
 
   // Since TS cannot determine model association at compile time
   // we have to declare them here purely virtually
   // these will not exist until `Model.init` was called.
-  public getProjects!: HasManyGetAssociationsMixin<Project>; // Note the null assertions!
-  public addProject!: HasManyAddAssociationMixin<Project, number>;
-  public hasProject!: HasManyHasAssociationMixin<Project, number>;
-  public countProjects!: HasManyCountAssociationsMixin;
-  public createProject!: HasManyCreateAssociationMixin<Project>;
+  public declare getProjects: HasManyGetAssociationsMixin<Project>; // Note the null assertions!
+  public declare addProject: HasManyAddAssociationMixin<Project, number>;
+  public declare hasProject: HasManyHasAssociationMixin<Project, number>;
+  public declare countProjects: HasManyCountAssociationsMixin;
+  public declare createProject: HasManyCreateAssociationMixin<Project>;
 
   // You can also pre-declare possible inclusions, these will only be populated if you
   // actively include a relation.
-  public readonly projects?: Project[]; // Note this is optional since it's only populated when explicitly requested in code
+  public declare readonly projects?: Project[]; // Note this is optional since it's only populated when explicitly requested in code
 
   public static associations: {
     projects: Association<User, Project>;
@@ -78,12 +78,12 @@ class Project
   extends Model<ProjectAttributes, ProjectCreationAttributes>
   implements ProjectAttributes
 {
-  public id!: number;
-  public ownerId!: number;
-  public name!: string;
+  public declare id: number;
+  public declare ownerId: number;
+  public declare name: string;
 
-  public readonly createdAt!: Date;
-  public readonly updatedAt!: Date;
+  public declare readonly createdAt: Date;
+  public declare readonly updatedAt: Date;
 }
 
 interface AddressAttributes {
@@ -94,11 +94,11 @@ interface AddressAttributes {
 // You can write `extends Model<AddressAttributes, AddressAttributes>` instead,
 // but that will do the exact same thing as below
 class Address extends Model<AddressAttributes> implements AddressAttributes {
-  public userId!: number;
-  public address!: string;
+  public declare userId: number;
+  public declare address: string;
 
-  public readonly createdAt!: Date;
-  public readonly updatedAt!: Date;
+  public declare readonly createdAt: Date;
+  public declare readonly updatedAt: Date;
 }
 
 // You can also define modules in a functional way
@@ -219,10 +219,10 @@ async function doStuffWithUser() {
 
   const project = await newUser.createProject({
     name: "first!",
-    ownerId: 123,
+    ownerId: newUser.id,
   });
 
-  const ourUser = await User.findByPk(1, {
+  const ourUser = await User.findByPk(newUser.id, {
     include: [User.associations.projects],
     rejectOnEmpty: true, // Specifying true here removes `null` from the return type!
   });
